@@ -70,12 +70,7 @@ jobs:
       run: |
         mkdir upload
         mv feesafe/feesafe-android/build/outputs/apk/release/feesafe-*.apk upload/feesafe-testnet-latest.apk
-        /usr/local/lib/android/sdk/build-tools/34.0.0/apksigner sign \
-          --ks signingkey \
-          --ks-pass pass:$TESTNET_STORE_PASS \
-          --ks-key-alias $TESTNET_ALIAS \
-          --key-pass pass:$TESTNET_KEY_PASS \
-          upload/feesafe-testnet-latest.apk
+        /usr/local/lib/android/sdk/build-tools/34.0.0/apksigner sign --ks signingkey --ks-pass pass:$TESTNET_STORE_PASS --ks-key-alias $TESTNET_ALIAS --key-pass pass:$TESTNET_KEY_PASS upload/feesafe-testnet-latest.apk
       shell: bash
       env:
         TESTNET_STORE_PASS: ${{secrets.TESTNET_STORE_PASS}}
