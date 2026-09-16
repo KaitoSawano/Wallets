@@ -47,16 +47,18 @@ jobs:
     - name: Build lightning-kmp and install to local maven repo
       run: |
         cd lightning-kmp
+        chmod +x gradlew
         ./gradlew clean build publishToMavenLocal -x check
 
     - name: Assemble the android apk
       run: |
         cd feesafe
+        chmod +x gradlew
         ./gradlew clean
         printf "\nskip.android=false" >> local.properties
         ./gradlew :feesafe-android:assembleRelease --stacktrace
 
-      # 4 - sign apk
+    # 4 - sign apk
 
     - name: Retrieve signing key
       run: 'echo "$TESTNET_KEY_HEX" | xxd -r -p > signingkey'
@@ -75,7 +77,7 @@ jobs:
         TESTNET_ALIAS: ${{secrets.TESTNET_ALIAS}}
         TESTNET_KEY_PASS: ${{secrets.TESTNET_KEY_PASS}}
 
-      # 5 - upload apk
+    # 5 - upload apk
 
     - name: Upload apk as artifact for this action
       uses: actions/upload-artifact@v4
