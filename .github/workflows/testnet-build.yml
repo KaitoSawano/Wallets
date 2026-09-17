@@ -66,6 +66,12 @@ jobs:
       env:
         TESTNET_KEY_HEX: ${{secrets.TESTNET_KEY_HEX}}
 
+    - name: Set up Java 11 for signing
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
     - name: Sign artifact
       run: |
         mkdir upload
