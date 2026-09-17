@@ -69,6 +69,7 @@ fun TopBar(
     inFlightPaymentsCount: Int,
     showRequestLiquidity: Boolean,
     onRequestLiquidityClick: () -> Unit,
+    onSettingsClick: () -> Unit, // Ditambahkan untuk menerima aksi klik settings di atas
 ) {
     val context = LocalContext.current
 
@@ -108,6 +109,15 @@ fun TopBar(
             )
             Spacer(modifier = Modifier.width(4.dp))
         }
+
+        // Tombol Settings (Gir) dipindah ke sebelah FAQ
+        TopBadgeButton(
+            text = null,
+            icon = R.drawable.ic_settings,
+            iconTint = MaterialTheme.colors.onSurface,
+            onClick = onSettingsClick,
+        )
+        Spacer(modifier = Modifier.width(4.dp))
 
         TopBadgeButton(
             text = stringResource(R.string.home_faq_button),
@@ -175,14 +185,6 @@ private fun ConnectionBadge(
                 modifier = Modifier.alpha(connectionsButtonAlpha)
             )
         }
-//        TODO: display a warning for desynced Electrum servers
-//        electrumBlockheight < XXX -> TopBadgeButton(
-//            text = stringResource(id = R.string.home_connection_electrum_late),
-//            icon = R.drawable.ic_alert_triangle,
-//            iconTint = warningColor,
-//            onClick = onConnectionsStateButtonClick,
-//            modifier = Modifier.alpha(connectionsButtonAlpha)
-//        )
         torEnabled?.value == true -> {
             TopBadgeButton(
                 text = stringResource(id = R.string.home_connection_tor_active),
@@ -302,14 +304,7 @@ fun BottomBar(
     ) {
         Box(modifier = Modifier.fillMaxWidth().height(82.dp)) {
             Row {
-                Button(
-                    icon = R.drawable.ic_settings,
-                    onClick = onSettingsClick,
-                    iconTint = MaterialTheme.colors.onSurface,
-                    padding = PaddingValues(20.dp),
-                    modifier = Modifier.fillMaxHeight()
-                )
-                VSeparator(PaddingValues(top = 20.dp, bottom = 20.dp))
+                // Tombol settings bawah dihapus, hanya menyisakan Receive & Send
                 Button(
                     text = stringResource(id = R.string.menu_receive),
                     icon = R.drawable.ic_receive,
