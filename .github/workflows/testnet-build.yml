@@ -56,14 +56,14 @@ jobs:
         chmod +x gradlew
         ./gradlew clean
         printf "\nskip.android=false" >> local.properties
-        ./gradlew :feesafe-android:assembleRelease --stacktrace
+        ./gradlew :feesafe-android:assembleDebug --stacktrace
 
-    # 4 - prepare artifact (menggunakan signed/unsigned release APK bawaan gradle)
+    # 4 - prepare artifact (menggunakan build debug yang sudah bertanda tangan otomatis)
 
     - name: Prepare artifact
       run: |
         mkdir upload
-        cp feesafe/feesafe-android/build/outputs/apk/release/feesafe-*.apk upload/feesafe-testnet-latest.apk
+        mv feesafe/feesafe-android/build/outputs/apk/debug/feesafe-*.apk upload/feesafe-testnet-latest.apk
       shell: bash
 
     # 5 - upload apk as artifact
