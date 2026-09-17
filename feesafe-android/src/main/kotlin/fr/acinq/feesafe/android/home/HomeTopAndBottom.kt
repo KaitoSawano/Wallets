@@ -110,7 +110,7 @@ fun TopBar(
             Spacer(modifier = Modifier.width(4.dp))
         }
 
-        // Tombol Settings (Gir) dipindah ke sebelah FAQ
+        // The Settings (Gear) button is next to the FAQ
         TopBadgeButton(
             text = null,
             icon = R.drawable.ic_settings,
@@ -304,7 +304,6 @@ fun BottomBar(
     ) {
         Box(modifier = Modifier.fillMaxWidth().height(82.dp)) {
             Row {
-                // Tombol settings bawah dihapus, hanya menyisakan Receive & Send
                 Button(
                     text = stringResource(id = R.string.menu_receive),
                     icon = R.drawable.ic_receive,
