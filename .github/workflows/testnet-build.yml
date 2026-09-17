@@ -58,45 +58,18 @@ jobs:
         printf "\nskip.android=false" >> local.properties
         ./gradlew :feesafe-android:assembleRelease --stacktrace
 
-    # 4 - sign apk
+    # 4 - prepare artifact (menggunakan signed/unsigned release APK bawaan gradle)
 
-    - name: Retrieve signing key
-      run: 'echo "$TESTNET_KEY_HEX" | xxd -r -p > signingkey'
-      shell: bash
-      env:
-        TESTNET_KEY_HEX: ${{secrets.TESTNET_KEY_HEX}}
-
-    - name: Set up Java 11 for signing
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-
-    - name: Sign artifact
+    - name: Prepare artifact
       run: |
         mkdir upload
-        mv feesafe/feesafe-android/build/outputs/apk/release/feesafe-*.apk upload/feesafe-testnet-latest.apk
-        /usr/local/lib/android/sdk/build-tools/34.0.0/apksigner sign --ks "$KS_FILE" --ks-pass "pass:$KS_PASS" --ks-key-alias "$KS_ALIAS" --key-pass "pass:$KEY_PASS" "$APK_FILE"
+        cp feesafe/feesafe-android/build/outputs/apk/release/feesafe-*.apk upload/feesafe-testnet-latest.apk
       shell: bash
-      env:
-        KS_FILE: signingkey
-        KS_PASS: ${{ secrets.TESTNET_STORE_PASS }}
-        KS_ALIAS: ${{ secrets.TESTNET_ALIAS }}
-        KEY_PASS: ${{ secrets.TESTNET_KEY_PASS }}
-        APK_FILE: upload/feesafe-testnet-latest.apk
 
-    # 5 - upload apk
+    # 5 - upload apk as artifact
 
     - name: Upload apk as artifact for this action
       uses: actions/upload-artifact@v4
       with:
         name: feesafe-testnet
         path: upload/feesafe-testnet-latest.apk
-
-    - name: Upload to acinq.co
-      run: |
-        aws s3 cp ./upload/feesafe-testnet-latest.apk s3://acinq.co/pub/feesafe/
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'eu-west-1'
