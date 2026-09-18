@@ -18,19 +18,10 @@
 package fr.acinq.feesafe.android.home
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -119,17 +110,17 @@ fun HomeView(
     val finalWallet = business.peerManager.finalWallet.collectAsState()
 
     BackHandler {
-        // force the back button to minimize the app
         context.findActivity().moveTaskToBack(false)
     }
 
-    val defaultHeight = 190.dp
+    val defaultHeight = 240.dp // Ditinggikan sedikit untuk menampung tombol Send & Receive
     val collapsedHeight = 0.dp
 
     val motionScene = MotionScene {
         val collapsibleRef = createRefFor("collapsible")
         val topBarRef = createRefFor("topBar")
         val balanceRef = createRefFor("balance")
+        val actionsRef = createRefFor("actions") // Bagian tombol Send & Receive
         val separatorRef = createRefFor("separator")
         val noticesRef = createRefFor("notices")
 
@@ -143,7 +134,12 @@ fun HomeView(
                 alpha = 1f
             }
             constrain(balanceRef) {
-                top.linkTo(topBarRef.bottom, margin = 36.dp)
+                top.linkTo(topBarRef.bottom, margin = 16.dp)
+                centerHorizontallyTo(collapsibleRef)
+                alpha = 1f
+            }
+            constrain(actionsRef) {
+                top.linkTo(balanceRef.bottom, margin = 16.dp)
                 centerHorizontallyTo(collapsibleRef)
                 alpha = 1f
             }
@@ -154,10 +150,10 @@ fun HomeView(
                 alpha = 1f
             }
             constrain(noticesRef) {
-                top.linkTo(separatorRef.bottom, margin = 16.dp)
+                top.linkTo(separatorRef.bottom, margin = 8.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom, margin = 16.dp)
+                bottom.linkTo(parent.bottom, margin = 8.dp)
             }
         }
         val endConstraint = constraintSet {
@@ -172,6 +168,10 @@ fun HomeView(
             constrain(balanceRef) {
                 bottom.linkTo(parent.top)
                 centerHorizontallyTo(parent)
+                alpha = 0f
+            }
+            constrain(actionsRef) {
+                bottom.linkTo(parent.top)
                 alpha = 0f
             }
             constrain(separatorRef) {
@@ -196,17 +196,19 @@ fun HomeView(
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
+            val max = maxPx
+            val min = minPx
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 val height = collapsibleHeight.value
 
-                if (height + available.y > maxPx) {
-                    collapsibleHeight.value = maxPx
-                    return Offset(0f, maxPx - height)
+                if (height + available.y > max) {
+                    collapsibleHeight.value = max
+                    return Offset(0f, max - height)
                 }
 
-                if (height + available.y < minPx) {
-                    collapsibleHeight.value = minPx
-                    return Offset(0f, minPx - height)
+                if (height + available.y < min) {
+                    collapsibleHeight.value = min
+                    return Offset(0f, min - height)
                 }
 
                 collapsibleHeight.value += available.y
@@ -255,6 +257,14 @@ fun HomeView(
                 onNavigateToSwapInWallet = onNavigateToSwapInWallet,
                 onNavigateToFinalWallet = onNavigateToFinalWallet,
             )
+            
+            // Tombol Send dan Receive (Tanpa Buy)
+            HomeActions(
+                modifier = Modifier.layoutId("actions"),
+                onSendClick = onSendClick,
+                onReceiveClick = onReceiveClick,
+            )
+
             PrimarySeparator(modifier = Modifier.layoutId("separator"))
             HomeNotices(
                 modifier = Modifier.layoutId("notices"),
@@ -273,13 +283,11 @@ fun HomeView(
             onPaymentsHistoryClick = onPaymentsHistoryClick,
             payments = payments,
         )
-        BottomBar(Modifier, onSettingsClick, onReceiveClick, onSendClick)
     }
 
     val releaseNoteCode = application.globalPrefs.showReleaseNoteSinceCode.collectAsState(initial = null).value
     releaseNoteCode?.let { ReleaseNoteDialog(sinceCode = it) }
 }
-
 
 @Composable
 fun TorDisconnectedDialog(
