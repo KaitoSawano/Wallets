@@ -47,6 +47,7 @@ import fr.acinq.feesafe.android.R
 import fr.acinq.feesafe.android.WalletId
 import fr.acinq.feesafe.android.application
 import fr.acinq.feesafe.android.components.PrimarySeparator
+import fr.acinq.feesafe.android.components.buttons.FilledButton
 import fr.acinq.feesafe.android.components.buttons.MutedFilledButton
 import fr.acinq.feesafe.android.components.buttons.TransparentFilledButton
 import fr.acinq.feesafe.android.components.buttons.openLink
@@ -113,14 +114,14 @@ fun HomeView(
         context.findActivity().moveTaskToBack(false)
     }
 
-    val defaultHeight = 240.dp // Ditinggikan sedikit untuk menampung tombol Send & Receive
+    val defaultHeight = 240.dp
     val collapsedHeight = 0.dp
 
     val motionScene = MotionScene {
         val collapsibleRef = createRefFor("collapsible")
         val topBarRef = createRefFor("topBar")
         val balanceRef = createRefFor("balance")
-        val actionsRef = createRefFor("actions") // Bagian tombol Send & Receive
+        val actionsRef = createRefFor("actions")
         val separatorRef = createRefFor("separator")
         val noticesRef = createRefFor("notices")
 
@@ -258,7 +259,6 @@ fun HomeView(
                 onNavigateToFinalWallet = onNavigateToFinalWallet,
             )
             
-            // Tombol Send dan Receive (Tanpa Buy)
             HomeActions(
                 modifier = Modifier.layoutId("actions"),
                 onSendClick = onSendClick,
@@ -287,6 +287,34 @@ fun HomeView(
 
     val releaseNoteCode = application.globalPrefs.showReleaseNoteSinceCode.collectAsState(initial = null).value
     releaseNoteCode?.let { ReleaseNoteDialog(sinceCode = it) }
+}
+
+@Composable
+fun HomeActions(
+    modifier: Modifier = Modifier,
+    onSendClick: () -> Unit,
+    onReceiveClick: () -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FilledButton(
+            text = stringResource(id = R.string.send),
+            icon = R.drawable.ic_send,
+            onClick = onSendClick,
+            modifier = Modifier.weight(1f)
+        )
+        FilledButton(
+            text = stringResource(id = R.string.receive),
+            icon = R.drawable.ic_receive,
+            onClick = onReceiveClick,
+            modifier = Modifier.weight(1f)
+        )
+    }
 }
 
 @Composable
