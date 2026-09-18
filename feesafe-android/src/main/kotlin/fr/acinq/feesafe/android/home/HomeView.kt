@@ -303,13 +303,13 @@ fun HomeActions(
         verticalAlignment = Alignment.CenterVertically
     ) {
         FilledButton(
-            text = stringResource(id = R.string.send),
+            text = "Send",
             icon = R.drawable.ic_send,
             onClick = onSendClick,
             modifier = Modifier.weight(1f)
         )
         FilledButton(
-            text = stringResource(id = R.string.receive),
+            text = "Receive",
             icon = R.drawable.ic_receive,
             onClick = onReceiveClick,
             modifier = Modifier.weight(1f)
