@@ -242,6 +242,7 @@ fun HomeView(
                 isPowerSaverMode = isPowerSaverModeOn,
                 showRequestLiquidity = walletContext?.isManualLiquidityEnabled == true && channels.canRequestLiquidity(),
                 onRequestLiquidityClick = onRequestLiquidityClick,
+                onSettingsClick = onSettingsClick,
             )
             HomeBalance(
                 modifier = Modifier.layoutId("balance"),
